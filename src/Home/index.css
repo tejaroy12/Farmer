@@ -33,8 +33,10 @@
     font-size: 1.2rem;
     font-weight: 600;
     color: #2d6a4f;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.1rem;
   }
+
+
   
   .product-company {
     font-size: 0.9rem;
@@ -47,14 +49,22 @@
     color: #444;
     margin-bottom: 0.5rem;
   }
+
+  .price-buy{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   
   .product-price {
     font-weight: bold;
     color: #1b4332;
+    padding-top:0.5rem;
   }
   .buy-button {
-    margin-top: 0.75rem;
-    padding: 0.5rem 1rem;
+    /* margin-top: 0.75rem;
+    padding: 0.5rem 1rem; */
+    margin-right:1.5rem;
     background-color: #2d6a4f;
     color: white;
     border: none;
@@ -137,13 +147,21 @@ body {
   
   
   
-  .cart-item {
+  /* .cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
     padding: 4px 0;
     border-bottom: 1px dashed #eee;
+  } */
+
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    align-items: center;
+    font-size: 14px;
   }
   
   .floating-cart-button {
@@ -181,7 +199,7 @@ body {
   /* 🎯 Fixed & Floating Always */
   .floating-cart-button {
     position: fixed;
-    top: 1rem;
+    top: 5rem;
     right: 1rem;
     z-index: 1000;
     /* other styles remain same */
@@ -209,6 +227,7 @@ body {
     margin-top: 40px;
     border-top: 1px solid #ddd;
     color: #444;
+    /* No position property needed for this approach */
   }
   
   .footer .whatsapp-link {
@@ -232,7 +251,7 @@ body {
     border-bottom: 1px dashed #eee;
   }
   
-  .remove-btn {
+  /* .remove-btn {
     background: none;
     border: none;
     color: #d9534f;
@@ -240,6 +259,14 @@ body {
     cursor: pointer;
     padding: 2px;
     transition: transform 0.2s ease;
+  } */
+
+  .remove-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: red;
   }
   
   .remove-btn:hover {
@@ -264,4 +291,26 @@ body {
   .close-cart-btn:hover {
     transform: scale(1.2);
   }
-      
+
+  .view-toggle-btn {
+    background: none;
+    border: none;
+    color: #0a0e12;
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+    margin-top: 4px;
+    margin-left :0.5rem;
+  }
+  
+  .directions-button {
+    display: inline-block;
+    margin-top: 5px;
+    background-color: #0b8457;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  

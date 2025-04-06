@@ -1,44 +1,114 @@
 import { useEffect, useState } from "react";
 import CropMenu from "../CropMenu/cropmenu";
 import Loader from "../Loader/loader";
+import CartPanel from "./CartPanel";
 import "./index.css";
+import ProductCard from "./ProductCard";
+
+const shopLat = 17.160855;
+const shopLng = 79.495642;
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [expandedProducts, setExpandedProducts] = useState({});
   const [cart, setCart] = useState(() => {
     const stored = localStorage.getItem("cart");
     return stored ? JSON.parse(stored) : [];
   });
   const [cartOpen, setCartOpen] = useState(false);
-  const [selectedCrop, setSelectedCrop] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState({ type: null, id: null });
+  const [categories, setCategories] = useState([]);
+  const [viruses, setViruses] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedVirus, setSelectedVirus] = useState(null);
+  const [filteredViruses, setFilteredViruses] = useState([]);
+  const [distance, setDistance] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
     fetch("https://raythu-admin.vercel.app/product")
       .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error("Error fetching products:", err));
+      .then(setProducts)
+      .catch(console.error);
+
+    fetch("https://raythu-admin.vercel.app/category")
+      .then((res) => res.json())
+      .then(setCategories)
+      .catch(console.error);
+
+    fetch("https://raythu-admin.vercel.app/virus")
+      .then((res) => res.json())
+      .then(setViruses)
+      .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = viruses.filter(v => v.category_id === selectedCategory);
+      setFilteredViruses(filtered);
+      setSelectedVirus(null);
+    } else {
+      setFilteredViruses([]);
+      setSelectedVirus(null);
+    }
+  }, [selectedCategory, viruses]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  useEffect(() => {
+    let watchId;
+    if ("geolocation" in navigator) {
+      watchId = navigator.geolocation.watchPosition(
+        ({ coords: { latitude, longitude } }) => {
+          const dist = getDistance(latitude, longitude, shopLat, shopLng);
+          setDistance(dist.toFixed(1));
+          setUserLocation({ lat: latitude, lng: longitude });
+        },
+        () => {
+          setDistance(null);
+          setUserLocation(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    }
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   const handleBuyNow = (product) => {
     setCart((prev) => {
-      const updated = [...prev, product];
-  
-      // ✅ Auto-open cart if it's the first item
-      if (updated.length === 1) {
-        setCartOpen(true);
+      const index = prev.findIndex((p) => p.id === product.id);
+      if (index !== -1) {
+        const updated = [...prev];
+        updated[index].quantity += 1;
+        return updated;
+      } else {
+        const updated = [...prev, { ...product, quantity: 1 }];
+        if (updated.length === 1) setCartOpen(true);
+        return updated;
       }
-  
-      return updated;
     });
-  
     animateButton();
     alert(`${product.name_en} added to cart.`);
   };
-  
 
   const animateButton = () => {
     const btn = document.querySelector(".floating-cart-button");
@@ -52,69 +122,64 @@ const Home = () => {
     const updated = [...cart];
     updated.splice(index, 1);
     setCart(updated);
+    if (updated.length === 0) setCartOpen(false);
+  };
+
+  const handleQuantityChange = (index, newQuantity) => {
+    const updated = [...cart];
+    updated[index].quantity = newQuantity;
+    setCart(updated);
+  };
+
+  const handleTotalBuy = (deliveryType) => {
+    const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const baseTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const deliveryCharge = deliveryType === "auto" ? 20 * itemCount :
+                           deliveryType === "bike" ? 50 : 0;
+    const finalTotal = baseTotal + deliveryCharge;
   
-    // ✅ Auto-close cart if empty
-    if (updated.length === 0) {
-      setCartOpen(false);
-    }
+    const deliveryLabel = {
+      auto: "Auto (₹20 per item)",
+      bike: "Bike (₹50 flat)",
+      visit: "Visit Store (Free)",
+    }[deliveryType];
+  
+    const cartLines = cart.map(
+      (item, i) => `${i + 1}. ${item.name_en} x ${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}`
+    ).join("\n");
+  
+    const locationLink = userLocation
+      ? `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`
+      : "Location not shared";
+  
+    const message = `New Order:\n\n${cartLines}\n\nDelivery: ${deliveryLabel}\nDelivery Charge: ₹${deliveryCharge}\nTotal Items: ${itemCount}\nTotal: ₹${finalTotal}\nLocation: ${locationLink}`;
+  
+    const encoded = encodeURIComponent(message);
+    const url = `https://wa.me/919390315670?text=${encoded}`;
+    window.open(url, "_blank");
   };
   
 
-  const handleTotalBuy = () => {
-    if (cart.length === 0) return alert("Cart is empty.");
-    const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
-    const productList = cart
-      .map((p, i) => `${i + 1}. ${p.name_en} - ₹${p.price}`)
-      .join("%0A");
-    const message = `🛒 New Order:%0A%0A${productList}%0A%0ATotal: ₹${total}`;
-    window.open(`https://wa.me/919390315670?text=${message}`, "_blank");
+  const filteredProducts = selectedCategory
+    ? products.filter((p) => {
+        const matchesCategory = p.category_id === selectedCategory;
+        const matchesVirus = selectedVirus ? p.virus_id === selectedVirus : true;
+        return matchesCategory && matchesVirus;
+      })
+    : products;
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId === selectedCategory ? null : categoryId);
   };
 
-  const speakTelugu = (text) => {
-    const synth = window.speechSynthesis;
-  
-    const speak = () => {
-      const voices = synth.getVoices();
-      const teluguVoice =
-        voices.find(v => v.lang === "te-IN") ||
-        voices.find(v => v.lang.includes("IN") || v.lang.includes("hi"));
-  
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "te-IN";
-      utterance.pitch = 0.5;
-      utterance.rate = 0.9;
-  
-      if (teluguVoice) {
-        utterance.voice = teluguVoice;
-      } else {
-        console.warn("Telugu voice not found, using default.");
-      }
-  
-      synth.cancel();
-      synth.speak(utterance);
-    };
-  
-    if (synth.getVoices().length === 0) {
-      // Wait for voices to load, then speak
-      synth.onvoiceschanged = () => {
-        speak();
-        synth.onvoiceschanged = null; // Clear listener
-      };
-    } else {
-      speak();
-    }
+  const handleVirusSelect = (virusId) => {
+    setSelectedVirus(virusId === selectedVirus ? null : virusId);
   };
-  
-  
-  
-  
-  
-  
 
-  const filteredProducts = selectedCrop
-  ? products.filter(p => p.category?.toLowerCase() === selectedCrop.toLowerCase())
-  : products;
-
+  const resetFilters = () => {
+    setSelectedCategory(null);
+    setSelectedVirus(null);
+  };
 
   return (
     <>
@@ -122,7 +187,6 @@ const Home = () => {
         <Loader />
       ) : (
         <>
-          
           {cart.length > 0 && (
             <button
               className="floating-cart-button"
@@ -133,86 +197,68 @@ const Home = () => {
           )}
 
           <div className="crop-menu">
-            <CropMenu onCropSelect={(crop) => setSelectedCrop(crop)} />
-            {selectedCrop && (
-              <button
-                className="reset-button"
-                onClick={() => setSelectedCrop(null)}
-              >
-                ⬅️ Homeకి తిరిగి వెళ్ళండి
-              </button>
-            )}
+            <CropMenu
+              categories={categories}
+              viruses={filteredViruses}
+              selectedCategory={selectedCategory}
+              selectedVirus={selectedVirus}
+              onCategorySelect={handleCategorySelect}
+              onVirusSelect={handleVirusSelect}
+              onReset={resetFilters}
+            />
           </div>
 
           {cartOpen && (
-            <div className="cart-panel">
-              <h3>Your Cart</h3>
-              <button className="close-cart-btn" onClick={() => setCartOpen(false)}>❌</button>
-              <ul className="cart-list">
-                {cart.map((item, index) => (
-                    <li key={index} className="cart-item">
-                    <span className="cart-item-text">
-                        {item.name_en} - ₹{item.price}
-                    </span>
-                    <button className="remove-btn" onClick={() => handleRemove(index)}>
-                        ❌
-                    </button>
-                    </li>
-                ))}
-                </ul>
-
-              <p className="cart-total">
-                Total: ₹
-                {cart.reduce((sum, item) => sum + Number(item.price), 0)}
-              </p>
-              <button className="checkout-button" onClick={handleTotalBuy}>
-                ✅ Confirm & Send via WhatsApp
-              </button>
-            </div>
+            <CartPanel
+              cart={cart}
+              handleRemove={handleRemove}
+              handleQuantityChange={handleQuantityChange}
+              onClose={() => setCartOpen(false)}
+              handleTotalBuy={handleTotalBuy}
+            />
           )}
 
           <div className="home-container">
             {filteredProducts.map((product) => (
-              <div className="product-card" key={product.id}>
-                <img
-                  src={product.imageUrl}
-                  alt={product.name_en}
-                  className="product-image"
-                />
-                <div className="product-info">
-                  <h3 className="product-name">{product.name_te}</h3>
-                  <p className="product-company">{product.company}</p>
-                  <p className="product-description">{product.description}</p>
-                  <button
-                    className="voice-button"
-                    onClick={() => speakTelugu(product.description)}
-                  >
-                    🔊 Description వినండి
-                  </button>
-                  <p className="product-price">₹{product.price}</p>
-                  <button
-                    className="buy-button"
-                    onClick={() => handleBuyNow(product)}
-                  >
-                    Buy Now
-                  </button>
-                </div>
-              </div>
+              <ProductCard
+                key={product.id}
+                product={product}
+                expanded={expandedProducts[product.id]}
+                toggleExpand={() =>
+                  setExpandedProducts((prev) => ({
+                    ...prev,
+                    [product.id]: !prev[product.id],
+                  }))
+                }
+                handleBuyNow={handleBuyNow}
+              />
             ))}
           </div>
+
           <footer className="footer">
-  <p>🤝 We are trusted by 1000+ farmers and families.</p>
-  <a
-  href="https://wa.me/919390315670?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20shop%20and%20products."
-  target="_blank"
-  rel="noopener noreferrer"
-  className="whatsapp-link"
->
-  📞 Contact us on WhatsApp
-</a>
-
-</footer>
-
+            {distance && (
+              <p>📍 You are approximately {distance} km from our shop.</p>
+            )}
+            {userLocation && (
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${shopLat},${shopLng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="directions-button"
+              >
+                🧭 Get Directions
+              </a>
+            )}
+            <p>🤝 We are trusted by 1000+ farmers and families.</p>
+            <a
+              href="https://wa.me/919390315670?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20shop%20and%20products."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whatsapp-link"
+            >
+              📞 Contact us on WhatsApp
+            </a>
+          </footer>
         </>
       )}
     </>

@@ -1,28 +1,82 @@
 .crop-bar {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 12px 0;
-    background-color: #e8f5e9;
-    border-bottom: 2px solid #c8e6c9;
-    position: sticky;
-    top: 60px;
-    z-index: 100;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 10px;
+  background-color: #e8f5e9;
+  border-bottom: 2px solid #c8e6c9;
+  position: sticky;
+  top: 60px;
+  z-index: 100;
+  align-items: center;
+}
+
+.all-products {
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.crop-name,
+.virus-name {
+  padding: 10px 16px;
+  min-width: 100px;
+  text-align: center;
+  background-color: #43a047;
+  color: white;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.crop-name:hover {
+  background-color: #2e7d32;
+}
+
+.virus-name {
+  background-color: #ef0c0c;
+}
+
+.virus-name:hover {
+  background-color: #b71c1c;
+}
+
+.voice-btn {
+  background: none;
+  border: none;
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .crop-name,
+  .virus-name {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-width: unset;
   }
-  
-  .crop-name {
-    padding: 8px 14px;
-    background-color: #43a047;
-    color: white;
-    border-radius: 20px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+
+  .crop-bar {
+    top: 50px;
+    padding: 10px 5px;
+    gap: 8px;
   }
-  
-  .crop-name:hover {
-    background-color: #2e7d32;
-  }
+}
+
   
   
