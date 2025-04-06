@@ -1,0 +1,60 @@
+/* src/About/index.css */
+
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    background-color: #fefefe;
+  }
+  
+  .about-title {
+    font-size: 2rem;
+    color: #2e7d32;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .about-paragraph {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .about-images {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .about-images img {
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  .footer {
+    background: #f1f1f1;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 40px;
+    border-top: 1px solid #ddd;
+    color: #444;
+  }
+  
+  .footer .whatsapp-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #25d366;
+    font-weight: bold;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+  
+  .footer .whatsapp-link:hover {
+    opacity: 0.7;
+  }
+    
