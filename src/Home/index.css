@@ -166,7 +166,7 @@ body {
   
   .floating-cart-button {
     position: fixed;
-    bottom: 20px;
+    bottom:20px;
     right: 20px;
     padding: 12px 16px;
     background-color: #28a745;
@@ -199,7 +199,7 @@ body {
   /* 🎯 Fixed & Floating Always */
   .floating-cart-button {
     position: fixed;
-    top: 5rem;
+    top:10%;
     right: 1rem;
     z-index: 1000;
     /* other styles remain same */
@@ -312,5 +312,27 @@ body {
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
+  }
+
+  .out-of-stock-button{
+    margin-right:1.5rem;
+    background-color: #f50e0e;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    padding:6px;
+  }
+
+
+  @media (max-width: 768px) {
+    .floating-cart-button {
+      position: fixed;
+      top:90%;
+      right: 1rem;
+      z-index: 1000;
+
+    }
   }
   
