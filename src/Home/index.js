@@ -5,9 +5,6 @@ import CartPanel from "./CartPanel";
 import "./index.css";
 import ProductCard from "./ProductCard";
 
-const shopLat = 17.160855;
-const shopLng = 79.495642;
-
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [expandedProducts, setExpandedProducts] = useState({});
@@ -16,7 +13,6 @@ const Home = () => {
     return stored ? JSON.parse(stored) : [];
   });
   const [cartOpen, setCartOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState({ type: null, id: null });
   const [categories, setCategories] = useState([]);
   const [viruses, setViruses] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -30,12 +26,10 @@ const Home = () => {
       .then((res) => res.json())
       .then(setProducts)
       .catch(console.error);
-
     fetch("https://raythu-admin.vercel.app/category")
       .then((res) => res.json())
       .then(setCategories)
       .catch(console.error);
-
     fetch("https://raythu-admin.vercel.app/virus")
       .then((res) => res.json())
       .then(setViruses)
@@ -62,7 +56,7 @@ const Home = () => {
     if ("geolocation" in navigator) {
       watchId = navigator.geolocation.watchPosition(
         ({ coords: { latitude, longitude } }) => {
-          const dist = getDistance(latitude, longitude, shopLat, shopLng);
+          const dist = getDistance(latitude, longitude, 14.6197511, 78.0043446);
           setDistance(dist.toFixed(1));
           setUserLocation({ lat: latitude, lng: longitude });
         },
@@ -137,43 +131,44 @@ const Home = () => {
     const deliveryCharge = deliveryType === "auto" ? 20 * itemCount :
                            deliveryType === "bike" ? 50 : 0;
     const finalTotal = baseTotal + deliveryCharge;
-  
+
     const deliveryLabel = {
       auto: "Auto (₹20 per item)",
       bike: "Bike (₹50 flat)",
       visit: "Visit Store (Free)",
     }[deliveryType];
-  
+
     const cartLines = cart.map(
       (item, i) => `${i + 1}. ${item.name_en} x ${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}`
     ).join("\n");
-  
+
     const locationLink = userLocation
       ? `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`
       : "Location not shared";
-  
+
     const message = `New Order:\n\n${cartLines}\n\nDelivery: ${deliveryLabel}\nDelivery Charge: ₹${deliveryCharge}\nTotal Items: ${itemCount}\nTotal: ₹${finalTotal}\nLocation: ${locationLink}`;
-  
+
     const encoded = encodeURIComponent(message);
     const url = `https://wa.me/919390315670?text=${encoded}`;
     window.open(url, "_blank");
   };
-  
 
-  const filteredProducts = selectedCategory
-    ? products.filter((p) => {
-        const matchesCategory = p.category_id === selectedCategory;
-        const matchesVirus = selectedVirus ? p.virus_id === selectedVirus : true;
-        return matchesCategory && matchesVirus;
-      })
-    : products;
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory = selectedCategory ? p.category_id === selectedCategory : true;
+    const matchesVirus = selectedVirus ? p.virus_id === selectedVirus : true;
+    return matchesCategory && matchesVirus;
+  });
 
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId === selectedCategory ? null : categoryId);
+    if (selectedCategory !== categoryId) {
+      setSelectedCategory(categoryId);
+    }
   };
 
   const handleVirusSelect = (virusId) => {
-    setSelectedVirus(virusId === selectedVirus ? null : virusId);
+    if (selectedVirus !== virusId) {
+      setSelectedVirus(virusId);
+    }
   };
 
   const resetFilters = () => {
@@ -239,16 +234,14 @@ const Home = () => {
             {distance && (
               <p>📍 You are approximately {distance} km from our shop.</p>
             )}
-            {userLocation && (
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${shopLat},${shopLng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="directions-button"
-              >
-                🧭 Get Directions
-              </a>
-            )}
+            <a
+              href="https://maps.app.goo.gl/tGYqsVexcVXhcYmN6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="directions-button"
+            >
+              🧭 Get Directions
+            </a>
             <p>🤝 We are trusted by 1000+ farmers and families.</p>
             <a
               href="https://wa.me/919390315670?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20shop%20and%20products."
