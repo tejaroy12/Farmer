@@ -19,7 +19,7 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
     <div className="cart-panel shadow">
       <div className="cart-header">
         <h3>Your Cart 🛒</h3>
-        <button className="close-cart-btn" onClick={onClose}>❌</button>
+        <button className="close-cart-btn" style={{color:"red"}} onClick={onClose}>X</button>
       </div>
       <hr />
 
@@ -30,15 +30,20 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
           {cart.map((item, index) => (
             <li key={index} className="cart-item">
               <div className="item-info">
-                <span className="item-name">{item.name_en}</span>
+                <span className="item-name">{item.name_te}</span>
                 <span className="item-price">₹{item.price}</span>
+                {item.stock <= 5 && (
+                  <p className="warning-text" style={{ color: "red", fontWeight: "bold" }}>
+                    ⚠️ Only {item.stock} left in stock!
+                  </p>
+                )}
               </div>
               <div className="quantity-controls clean">
-                <button onClick={() => handleQuantityChange(index, item.quantity - 1)} disabled={item.quantity <= 1}>−</button>
-                <span className="quantity">{item.quantity}</span>
-                <button onClick={() => handleQuantityChange(index, item.quantity + 1)}>＋</button>
+                <button onClick={() => handleQuantityChange(index, item.quantity - 1)} disabled={item.quantity <= 1} style={{backgroundColor:"red" ,color:"white",border:"none"}}>−</button>
+                <span className="quantity"> {item.quantity} </span>
+                <button onClick={() => handleQuantityChange(index, item.quantity + 1)} style={{backgroundColor:"green",color:"white",border:"none"}}>＋</button>
               </div>
-              <button className="remove-btn" onClick={() => handleRemove(index)}>❌</button>
+              <button className="remove-btn" onClick={() => handleRemove(index)}>X</button>
             </li>
           ))}
         </ul>
@@ -55,7 +60,7 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
             onChange={() => setDeliveryType("auto")}
           />
           🚗 Auto (₹20 per item)
-        </label>
+        </label><br/>
         <label>
           <input
             type="radio"
@@ -65,7 +70,7 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
             onChange={() => setDeliveryType("bike")}
           />
           🛵 Bike (₹50 flat)
-        </label>
+        </label><br/>
         <label>
           <input
             type="radio"
