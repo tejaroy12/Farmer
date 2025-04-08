@@ -6,7 +6,7 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="logo">🌾 Sri Lakshmi Narasimha</div>
+      <div className="logo">🌾 Green Mart</div>
 
       <button
         className="menu-toggle"
