@@ -74,7 +74,7 @@
   cursor: pointer;
   color: #2d6a4f;
   z-index: 1001;
-  position: absolute;
+  position: static;
   top: 1rem;
   right: 1.5rem;
 }
