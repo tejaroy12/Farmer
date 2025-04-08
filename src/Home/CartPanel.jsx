@@ -19,7 +19,7 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
     <div className="cart-panel shadow">
       <div className="cart-header">
         <h3>Your Cart 🛒</h3>
-        <button className="close-cart-btn" style={{color:"red"}} onClick={onClose}>X</button>
+        <button className="close-cart-btn" style={{color:"red"}}onClick={onClose}>X</button>
       </div>
       <hr />
 
@@ -32,11 +32,6 @@ const CartPanel = ({ cart, handleRemove, handleTotalBuy, onClose, handleQuantity
               <div className="item-info">
                 <span className="item-name">{item.name_te}</span>
                 <span className="item-price">₹{item.price}</span>
-                {item.stock <= 5 && (
-                  <p className="warning-text" style={{ color: "red", fontWeight: "bold" }}>
-                    ⚠️ Only {item.stock} left in stock!
-                  </p>
-                )}
               </div>
               <div className="quantity-controls clean">
                 <button onClick={() => handleQuantityChange(index, item.quantity - 1)} disabled={item.quantity <= 1} style={{backgroundColor:"red" ,color:"white",border:"none"}}>−</button>
