@@ -385,7 +385,7 @@ const Home = () => {
             🧭 Get Directions
           </a>
         )}
-        <p>🤝 We are trusted by 1000+ farmers and families.</p>
+        <p>🤝 మాకు 1000+ రైతుల నమ్మకం ఉంది.</p>
         <a
           href="https://wa.me/919390315670?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20shop%20and%20products."
           target="_blank"
