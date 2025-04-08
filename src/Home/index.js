@@ -376,16 +376,15 @@ const Home = () => {
           <p>📍 You are approximately {distance} km from our shop.</p>
         )}
         {userLocation && (
-  <a
-    href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${shopLat},${shopLng}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="directions-button"
-  >
-    🧭 Get Directions
-  </a>
-)}
-
+          <a
+            href="https://maps.app.goo.gl/tGYqsVexcVXhcYmN6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="directions-button"
+          >
+            🧭 Get Directions
+          </a>
+        )}
         <p>🤝 We are trusted by 1000+ farmers and families.</p>
         <a
           href="https://wa.me/919390315670?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20shop%20and%20products."
