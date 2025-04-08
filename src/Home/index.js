@@ -373,7 +373,7 @@ const Home = () => {
 
       <footer className="footer">
         {distance && (
-          <p>📍 You are approximately {distance} km from our shop.</p>
+          <p>📍 మీరు మా దుకానం నుండి {distance} km లా దూరం లో ఉన్నారు.</p>
         )}
         {userLocation && (
           <a
