@@ -230,7 +230,7 @@ const Home = () => {
       if (newCart.length === 1) setCartOpen(true);
       return newCart;
     });
-    window.location.href = "https://cart.updated";
+    
 
     animateButton();
   };
