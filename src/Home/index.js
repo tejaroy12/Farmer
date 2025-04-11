@@ -230,6 +230,7 @@ const Home = () => {
       if (newCart.length === 1) setCartOpen(true);
       return newCart;
     });
+    window.location.href = "native://cart_updated";
     animateButton();
   };
 
